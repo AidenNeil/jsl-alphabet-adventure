@@ -1,0 +1,32 @@
+========================================
+JSL ALPHABET ADVENTURE - QUICK START
+========================================
+
+PORT CHANGED: Now using port 3000!
+
+STEPS TO START:
+========================================
+
+1. STOP the current server
+   Press: CTRL + C
+
+2. START the server again
+   Run: npm run dev
+
+3. OPEN your browser
+   Go to: http://localhost:3000
+
+========================================
+
+BROWSER URLS (choose any):
+- http://localhost:3000
+- http://127.0.0.1:3000
+
+========================================
+
+WHAT YOU'LL SEE:
+✓ Beautiful home page
+✓ 3 game modes to choose from
+✓ Learn, Practice, and Challenge modes
+
+========================================

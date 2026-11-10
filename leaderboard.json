@@ -1,0 +1,115 @@
+{
+  "practice": [
+    {
+      "score": 10,
+      "total": 10,
+      "percentage": 100.0,
+      "date": "2025-10-24 21:09:13"
+    },
+    {
+      "score": 10,
+      "total": 10,
+      "percentage": 100.0,
+      "date": "2025-10-25 09:58:24"
+    },
+    {
+      "score": 9,
+      "total": 10,
+      "percentage": 90.0,
+      "date": "2025-10-24 21:09:15"
+    },
+    {
+      "score": 8,
+      "total": 10,
+      "percentage": 80.0,
+      "date": "2025-10-24 21:21:50"
+    }
+  ],
+  "challenge": [
+    {
+      "score": 10,
+      "total": 10,
+      "percentage": 100.0,
+      "date": "2025-10-24 21:19:48"
+    },
+    {
+      "score": 9,
+      "total": 10,
+      "percentage": 90.0,
+      "date": "2025-10-24 21:19:49"
+    }
+  ],
+  "memory": [
+    {
+      "score": 7,
+      "total": 10,
+      "percentage": 70.0,
+      "date": "2025-10-24 21:21:52",
+      "streak": 4
+    }
+  ],
+  "speed": [
+    {
+      "score": 9,
+      "total": 10,
+      "percentage": 90.0,
+      "date": "2025-10-25 10:05:56"
+    },
+    {
+      "score": 8,
+      "total": 10,
+      "percentage": 80.0,
+      "date": "2025-10-25 10:05:58"
+    }
+  ],
+  "survival": [
+    {
+      "score": 13,
+      "total": 13,
+      "percentage": 100.0,
+      "date": "2025-10-25 09:59:01"
+    },
+    {
+      "score": 5,
+      "total": 5,
+      "percentage": 100.0,
+      "date": "2025-10-25 09:18:51"
+    }
+  ],
+  "memory_cards": [
+    {
+      "score": 6,
+      "total": 6,
+      "percentage": 100.0,
+      "date": "2025-10-25 09:40:59",
+      "moves": 16,
+      "time": 66
+    }
+  ],
+  "practice_type": [
+    {
+      "score": 5,
+      "total": 10,
+      "percentage": 50.0,
+      "date": "2025-10-25 09:46:47"
+    },
+    {
+      "score": 5,
+      "total": 15,
+      "percentage": 33.3,
+      "date": "2025-10-25 09:46:49",
+      "totalScore": 50,
+      "bestStreak": 2
+    }
+  ],
+  "challenge_cards": [
+    {
+      "score": 8,
+      "total": 8,
+      "percentage": 100.0,
+      "date": "2025-10-25 09:55:49",
+      "moves": 21,
+      "time": 112
+    }
+  ]
+}

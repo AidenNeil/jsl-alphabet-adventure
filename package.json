@@ -1,0 +1,30 @@
+{
+  "name": "jsl-alphabet-adventure",
+  "version": "2.0.0",
+  "description": "JSL Alphabet Adventure - Python Flask Web Application",
+  "scripts": {
+    "dev": "python start_browser.py",
+    "start": "python start_browser.py",
+    "server": "python app.py",
+    "demo": "python demo.py",
+    "test": "python quick_test.py",
+    "console": "python main.py",
+    "install": "pip install -r requirements.txt"
+  },
+  "keywords": [
+    "jsl",
+    "jamaican-sign-language",
+    "sign-language",
+    "education",
+    "flask",
+    "python"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "python": ">=3.7"
+  },
+  "devDependencies": {},
+  "dependencies": {}
+}
+

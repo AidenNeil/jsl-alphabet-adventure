@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speed Modes - JSL Alphabet Adventure</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            background: linear-gradient(135deg, #ff0844 0%, #ffb199 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .selection-container {
+            max-width: 1000px;
+            padding: 40px 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .header h1 {
+            font-size: 3.5rem;
+            color: white;
+            text-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            margin-bottom: 10px;
+            animation: flash 2s infinite;
+        }
+        
+        @keyframes flash {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        
+        .header p {
+            font-size: 1.3rem;
+            color: rgba(255,255,255,0.9);
+        }
+        
+        .modes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+        }
+        
+        .mode-option {
+            background: white;
+            border-radius: 25px;
+            padding: 40px 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .mode-option:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+        
+        .mode-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            animation: spin 3s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .mode-option h2 {
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #ff0844, #ffb199);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .mode-description {
+            font-size: 1.1rem;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+        
+        .feature-list {
+            text-align: left;
+            margin: 20px 0;
+        }
+        
+        .feature-item {
+            padding: 8px 0;
+            color: #555;
+            font-size: 0.95rem;
+        }
+        
+        .feature-item::before {
+            content: "✓ ";
+            color: #ff0844;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        
+        .play-button {
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #ff0844, #ffb199);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .play-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        
+        .home-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 12px 30px;
+            background: white;
+            color: #333;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+        
+        .home-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            .modes-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="/" class="home-button">🏠 Home</a>
+    
+    <div class="selection-container">
+        <div class="header">
+            <h1>⚡⚡ SPEED MODE ⚡⚡</h1>
+            <p>Lightning Fast Challenges!</p>
+        </div>
+        
+        <div class="modes-grid">
+            <!-- Original Speed Quiz -->
+            <div class="mode-option" onclick="window.location.href='/quiz/speed'">
+                <div class="mode-icon">💨</div>
+                <h2>Speed Quiz</h2>
+                <p class="mode-description">
+                    Ultra-fast quiz with only 2 seconds per question! Choose from multiple options rapidly!
+                </p>
+                <div class="feature-list">
+                    <div class="feature-item">2-second time limit</div>
+                    <div class="feature-item">Multiple choice answers</div>
+                    <div class="feature-item">10 questions</div>
+                    <div class="feature-item">Extreme pressure!</div>
+                    <div class="feature-item">Test your reflexes</div>
+                </div>
+                <button class="play-button">Play Speed Quiz</button>
+            </div>
+            
+            <!-- New Speed Blitz -->
+            <div class="mode-option" onclick="window.location.href='/speed/blitz'">
+                <div class="mode-icon">🚀</div>
+                <h2>Speed Blitz</h2>
+                <p class="mode-description">
+                    RAPID FIRE typing! Signs appear instantly - type as many as you can in 60 seconds!
+                </p>
+                <div class="feature-list">
+                    <div class="feature-item">60-second countdown</div>
+                    <div class="feature-item">Instant sign switching</div>
+                    <div class="feature-item">Type letters rapidly</div>
+                    <div class="feature-item">Global leaderboard</div>
+                    <div class="feature-item">ULTIMATE CHALLENGE!</div>
+                </div>
+                <button class="play-button">Play Speed Blitz</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

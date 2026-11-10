@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn Mode - JSL Alphabet Adventure</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container learn-container">
+        <div class="header">
+            <button class="home-button" onclick="goHome()">🏠 Home</button>
+            <div class="progress-text" id="progress">1 / 26</div>
+        </div>
+
+        <div class="learn-card">
+            <div class="letter-display" id="letterDisplay">A</div>
+            <p class="letter-description" id="description">Loading...</p>
+            
+            <div class="image-container">
+                <img id="letterImage" src="" alt="JSL Sign" class="letter-image">
+            </div>
+
+            <div class="navigation-buttons">
+                <button class="nav-button" onclick="previousLetter()">⬅️ Previous</button>
+                <button class="nav-button" onclick="nextLetter()">Next ➡️</button>
+            </div>
+
+            <div class="letter-grid" id="letterGrid"></div>
+        </div>
+    </div>
+
+    <script>
+        let alphabet = [];
+        let currentIndex = 0;
+
+        async function loadAlphabet() {
+            const response = await fetch('/api/alphabet');
+            alphabet = await response.json();
+            console.log('Loaded alphabet:', alphabet);
+            console.log('First letter image URL:', alphabet[0].imageUrl);
+            displayLetter(0);
+            createLetterGrid();
+        }
+
+        function displayLetter(index) {
+            currentIndex = index;
+            const letter = alphabet[index];
+            
+            console.log('Displaying letter:', letter.letter, 'with imageUrl:', letter.imageUrl);
+            
+            document.getElementById('letterDisplay').textContent = letter.letter;
+            document.getElementById('description').textContent = letter.description;
+            document.getElementById('letterImage').src = letter.imageUrl;
+            document.getElementById('letterImage').onerror = function() {
+                console.error('Failed to load image:', letter.imageUrl);
+                this.style.border = '3px solid red';
+                this.alt = 'Image failed to load: ' + letter.imageUrl;
+            };
+            document.getElementById('letterImage').onload = function() {
+                console.log('Successfully loaded image:', letter.imageUrl);
+            };
+            document.getElementById('progress').textContent = `${index + 1} / ${alphabet.length}`;
+            
+            updateLetterGrid();
+        }
+
+        function nextLetter() {
+            playClick();
+            const nextIndex = (currentIndex + 1) % alphabet.length;
+            displayLetter(nextIndex);
+        }
+
+        function previousLetter() {
+            playClick();
+            const prevIndex = (currentIndex - 1 + alphabet.length) % alphabet.length;
+            displayLetter(prevIndex);
+        }
+
+        function jumpToLetter(index) {
+            playClick();
+            displayLetter(index);
+        }
+
+        function createLetterGrid() {
+            const grid = document.getElementById('letterGrid');
+            alphabet.forEach((letter, index) => {
+                const button = document.createElement('button');
+                button.className = 'letter-button';
+                button.textContent = letter.letter;
+                button.onclick = () => jumpToLetter(index);
+                button.id = `letter-btn-${index}`;
+                grid.appendChild(button);
+            });
+        }
+
+        function updateLetterGrid() {
+            alphabet.forEach((letter, index) => {
+                const button = document.getElementById(`letter-btn-${index}`);
+                if (button) {
+                    button.className = index === currentIndex ? 'letter-button active' : 'letter-button';
+                }
+            });
+        }
+
+        function goHome() {
+            window.location.href = '/';
+        }
+
+        function playClick() {
+            // Simple click sound
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 800;
+            gainNode.gain.value = 0.1;
+            
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 0.05);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextLetter();
+            if (e.key === 'ArrowLeft') previousLetter();
+        });
+
+        loadAlphabet();
+    </script>
+</body>
+</html>
+

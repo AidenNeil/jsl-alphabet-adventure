@@ -1,0 +1,101 @@
+================================================
+🚀 RESTART REQUIRED - NEW FEATURES READY!
+================================================
+
+⚠️ IMPORTANT: Your terminal shows port 5000
+             But new code uses port 7000!
+
+You MUST restart to see:
+✅ 6 game modes (3 new ones!)
+✅ Your custom JSL images
+✅ Leaderboard with score tracking
+✅ High score notifications
+✅ All new features
+
+================================================
+HOW TO RESTART:
+================================================
+
+Step 1: STOP Server
+   Press: CTRL + C
+
+Step 2: START Server
+   Run: npm run dev
+
+Step 3: OPEN Browser
+   http://localhost:7000
+   (NOT 5000!)
+
+================================================
+WHAT YOU'LL SEE:
+================================================
+
+🏠 HOME PAGE:
+   - 6 colorful game mode cards
+   - 🏆 View Leaderboard button
+   - Your custom JSL images
+
+🎮 GAME MODES:
+   1. 📖 Learn (browse)
+   2. ⚡ Practice (10s)
+   3. 🏆 Challenge (5s)
+   4. 🧠 Memory (3s) - NEW!
+   5. ⚡⚡ Speed (2s) - NEW!
+   6. ❤️ Survival (3 lives) - NEW!
+
+🏆 LEADERBOARD:
+   - Top 10 scores per mode
+   - High score badges
+   - Date stamps
+   - Rank medals (🥇🥈🥉)
+   - Auto-saves all scores!
+
+================================================
+NEW FEATURES ADDED:
+================================================
+
+✅ Leaderboard System
+   - Saves top 10 per mode
+   - Shows high scores
+   - Tracks dates
+   - Medals for top 3
+
+✅ Score Tracking
+   - Auto-saves after games
+   - "NEW HIGH SCORE" alerts
+   - Persistent storage
+
+✅ Memory Mode
+   - See sign for 3 seconds
+   - Answer from memory
+   - Streak tracking 🔥
+
+✅ Speed Run
+   - 2 seconds only!
+   - Ultimate challenge
+   - For experts
+
+✅ Survival Mode
+   - 3 lives system
+   - Unlimited questions
+   - Hearts display ❤️
+
+✅ Enhanced Timers
+   - More visible
+   - Color-changing bars
+   - Accurate countdowns
+
+✅ Your Images
+   - All 26 letters (A.jpg - Z.jpg)
+   - In all game modes
+   - From jsl_alphabet_test/
+
+================================================
+RESTART NOW:
+================================================
+
+CTRL + C
+npm run dev
+Open: http://localhost:7000
+
+================================================

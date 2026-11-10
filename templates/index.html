@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSL Alphabet Adventure</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="title-section">
+            <h1 class="main-title">JSL Alphabet Adventure</h1>
+            <p class="subtitle">7 Exciting Modes to Master JSL! 🎮</p>
+            <a href="/leaderboard" style="display: inline-block; margin-top: 20px; padding: 12px 30px; background: linear-gradient(135deg, #ffd700, #ffed4e); color: #333; text-decoration: none; border-radius: 10px; font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
+                🏆 View Leaderboard
+            </a>
+        </div>
+
+        <div class="mode-grid">
+            <div class="mode-card" onclick="selectMode('learn')">
+                <div class="mode-icon learn-icon">📖</div>
+                <h2>Learn</h2>
+                <p>Browse all JSL letters at your own pace</p>
+                <button class="mode-button learn-button">Start Learn</button>
+            </div>
+
+            <div class="mode-card" onclick="selectMode('practice')">
+                <div class="mode-icon practice-icon">⚡</div>
+                <h2>Practice</h2>
+                <p>Test yourself with a slow-paced quiz (10s)</p>
+                <button class="mode-button practice-button">Start Practice</button>
+            </div>
+
+            <div class="mode-card" onclick="selectMode('challenge')">
+                <div class="mode-icon challenge-icon">🏆</div>
+                <h2>Challenge</h2>
+                <p>Fast-paced quiz to test your skills (5s)</p>
+                <button class="mode-button challenge-button">Start Challenge</button>
+            </div>
+
+            <div class="mode-card" onclick="selectMode('memory')">
+                <div class="mode-icon memory-icon">🧠</div>
+                <h2>Memory</h2>
+                <p>Memorize the sign, then answer (3s)</p>
+                <button class="mode-button memory-button">Start Memory</button>
+            </div>
+
+            <div class="mode-card" onclick="selectMode('speed')">
+                <div class="mode-icon speed-icon">⚡⚡</div>
+                <h2>Speed Run</h2>
+                <p>Lightning fast! Answer in 2 seconds!</p>
+                <button class="mode-button speed-button">Start Speed</button>
+            </div>
+
+            <div class="mode-card" onclick="selectMode('survival')">
+                <div class="mode-icon survival-icon">❤️</div>
+                <h2>Survival</h2>
+                <p>3 lives - how far can you go?</p>
+                <button class="mode-button survival-button">Start Survival</button>
+            </div>
+            <div class="mode-card word-card" onclick="selectMode('words')">
+                <div class="mode-icon word-icon">🎯</div>
+                <h2>Word Challenge 🆕</h2>
+                <p>Guess JSL sign language WORDS!</p>
+                <button class="mode-button word-button">Start Words</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function selectMode(mode) {
+            if (mode === 'learn') {
+                window.location.href = '/learn';
+            } else if (mode === 'practice') {
+                window.location.href = '/practice';
+            } else if (mode === 'challenge') {
+                window.location.href = '/challenge';
+            } else if (mode === 'memory') {
+                window.location.href = '/memory';
+            } else if (mode === 'speed') {
+                window.location.href = '/speed';
+            } else if (mode === 'survival') {
+                window.location.href = '/survival';
+            } else if (mode === 'words') {
+                window.location.href = '/words';
+            }
+        }
+    </script>
+</body>
+</html>
+

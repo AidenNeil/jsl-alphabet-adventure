@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Type Challenge - JSL Alphabet Adventure</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .game-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .home-btn {
+            padding: 12px 25px;
+            background: white;
+            color: #333;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .stats-panel {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .stat-box {
+            background: white;
+            padding: 15px 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .game-card {
+            background: white;
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        
+        .sign-image-container {
+            width: 100%;
+            max-width: 400px;
+            height: 400px;
+            margin: 0 auto 30px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .sign-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .instruction-text {
+            font-size: 1.5rem;
+            color: #666;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .input-area {
+            margin: 30px 0;
+        }
+        
+        .letter-input {
+            width: 150px;
+            height: 150px;
+            font-size: 6rem;
+            text-align: center;
+            border: 5px solid #4facfe;
+            border-radius: 20px;
+            background: #f8f8f8;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: all 0.3s;
+            outline: none;
+        }
+        
+        .letter-input:focus {
+            border-color: #00f2fe;
+            box-shadow: 0 0 30px rgba(79, 172, 254, 0.5);
+            background: white;
+        }
+        
+        .letter-input.correct {
+            border-color: #4ade80;
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            animation: correctPulse 0.5s;
+        }
+        
+        .letter-input.incorrect {
+            border-color: #ef4444;
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            animation: shake 0.5s;
+        }
+        
+        @keyframes correctPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        .keyboard-hint {
+            font-size: 1rem;
+            color: #999;
+            margin-top: 15px;
+        }
+        
+        .timer-circle {
+            width: 120px;
+            height: 120px;
+            margin: 20px auto;
+            position: relative;
+        }
+        
+        .timer-circle svg {
+            transform: rotate(-90deg);
+        }
+        
+        .timer-circle circle {
+            fill: none;
+            stroke-width: 10;
+        }
+        
+        .timer-circle .bg {
+            stroke: #e0e0e0;
+        }
+        
+        .timer-circle .progress {
+            stroke: #4facfe;
+            stroke-dasharray: 283;
+            stroke-dashoffset: 0;
+            transition: stroke-dashoffset 0.1s linear;
+        }
+        
+        .timer-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .combo-display {
+            font-size: 1.5rem;
+            color: #ff6b6b;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        
+        .combo-display.active {
+            animation: comboPulse 0.5s infinite;
+        }
+        
+        @keyframes comboPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); color: #ff0000; }
+        }
+        
+        .results-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .results-overlay.show {
+            display: flex;
+        }
+        
+        .results-card {
+            background: white;
+            padding: 50px;
+            border-radius: 25px;
+            text-align: center;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        
+        .results-emoji {
+            font-size: 5rem;
+            margin-bottom: 20px;
+        }
+        
+        .results-title {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .results-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <a href="/practice" class="home-btn">← Back</a>
+            
+            <div class="stats-panel">
+                <div class="stat-box">
+                    <div class="stat-label">Score</div>
+                    <div class="stat-value" id="score">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Question</div>
+                    <div class="stat-value" id="progress">1/15</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Streak</div>
+                    <div class="stat-value" id="streak">0</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="game-card">
+            <h2 class="instruction-text">What letter is this JSL sign?</h2>
+            
+            <div class="timer-circle">
+                <svg width="120" height="120">
+                    <circle class="bg" cx="60" cy="60" r="45"></circle>
+                    <circle class="progress" id="timerCircle" cx="60" cy="60" r="45"></circle>
+                </svg>
+                <div class="timer-text" id="timerText">10</div>
+            </div>
+            
+            <div class="sign-image-container">
+                <img id="signImage" src="" alt="JSL Sign" class="sign-image">
+            </div>
+            
+            <div class="combo-display" id="comboDisplay"></div>
+            
+            <div class="input-area">
+                <input 
+                    type="text" 
+                    class="letter-input" 
+                    id="letterInput" 
+                    maxlength="1" 
+                    autocomplete="off"
+                    autofocus
+                    placeholder="?"
+                >
+                <p class="keyboard-hint">Type the letter on your keyboard</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="results-overlay" id="resultsOverlay">
+        <div class="results-card">
+            <div class="results-emoji" id="resultsEmoji">🎉</div>
+            <h2 class="results-title">Amazing!</h2>
+            <div style="font-size: 1.5rem; margin: 20px 0;">
+                <p>Score: <strong id="finalScore">0</strong></p>
+                <p>Correct: <strong id="finalCorrect">0</strong>/15</p>
+                <p>Best Streak: <strong id="finalStreak">0</strong> 🔥</p>
+            </div>
+            <div class="results-buttons">
+                <button class="btn btn-primary" onclick="restartGame()">🔄 Play Again</button>
+                <button class="btn btn-secondary" onclick="goHome()">🏠 Home</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let sessionId = null;
+        let currentQuestion = null;
+        let currentQuestionNum = 0;
+        let totalQuestions = 15;
+        let score = 0;
+        let streak = 0;
+        let bestStreak = 0;
+        let correctAnswers = 0;
+        let timeLeft = 10;
+        let timerInterval = null;
+        let isAnswering = false;
+
+        const letterInput = document.getElementById('letterInput');
+
+        async function startGame() {
+            const response = await fetch('/api/quiz/start', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ isFast: false })
+            });
+            const data = await response.json();
+            sessionId = data.sessionId;
+            
+            loadNextQuestion();
+        }
+
+        async function loadNextQuestion() {
+            isAnswering = false;
+            letterInput.value = '';
+            letterInput.className = 'letter-input';
+            letterInput.disabled = false;
+            letterInput.focus();
+            
+            const response = await fetch(`/api/quiz/question/${sessionId}`);
+            const data = await response.json();
+            
+            if (data.gameOver) {
+                showResults();
+                return;
+            }
+            
+            currentQuestion = data.question;
+            currentQuestionNum = data.currentIndex + 1;
+            
+            document.getElementById('signImage').src = currentQuestion.imageUrl;
+            document.getElementById('progress').textContent = `${currentQuestionNum}/${totalQuestions}`;
+            document.getElementById('comboDisplay').textContent = '';
+            
+            startTimer();
+        }
+
+        function startTimer() {
+            timeLeft = 10;
+            clearInterval(timerInterval);
+            updateTimerDisplay();
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    handleTimeout();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            document.getElementById('timerText').textContent = timeLeft;
+            const circumference = 283;
+            const progress = (timeLeft / 10) * circumference;
+            document.getElementById('timerCircle').style.strokeDashoffset = circumference - progress;
+        }
+
+        letterInput.addEventListener('input', async function(e) {
+            if (isAnswering) return;
+            
+            const answer = e.target.value.toUpperCase();
+            if (!answer) return;
+            
+            isAnswering = true;
+            clearInterval(timerInterval);
+            
+            const response = await fetch('/api/quiz/answer', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    sessionId, 
+                    answer, 
+                    mode: 'practice_type'
+                })
+            });
+            const data = await response.json();
+            
+            if (data.correct) {
+                handleCorrect();
+            } else {
+                handleIncorrect(data.correctAnswer);
+            }
+            
+            setTimeout(() => {
+                if (data.gameOver) {
+                    showResults();
+                } else {
+                    loadNextQuestion();
+                }
+            }, 1500);
+        });
+
+        function handleCorrect() {
+            letterInput.className = 'letter-input correct';
+            playCorrectSound();
+            vibrateDevice(100);
+            
+            streak++;
+            if (streak > bestStreak) bestStreak = streak;
+            
+            // Score with multiplier for streak
+            let points = 10;
+            if (streak >= 5) points += 20; // 5+ streak bonus
+            else if (streak >= 3) points += 10; // 3+ streak bonus
+            
+            score += points;
+            correctAnswers++;
+            
+            document.getElementById('score').textContent = score;
+            document.getElementById('streak').textContent = streak;
+            
+            if (streak >= 3) {
+                const comboDisplay = document.getElementById('comboDisplay');
+                comboDisplay.textContent = `🔥 ${streak}x COMBO! 🔥`;
+                comboDisplay.className = 'combo-display active';
+            }
+        }
+
+        function handleIncorrect(correctAnswer) {
+            letterInput.className = 'letter-input incorrect';
+            letterInput.value = correctAnswer;
+            playIncorrectSound();
+            vibrateDevice(200);
+            
+            streak = 0;
+            document.getElementById('streak').textContent = '0';
+            document.getElementById('comboDisplay').textContent = '';
+        }
+
+        function handleTimeout() {
+            isAnswering = true;
+            letterInput.disabled = true;
+            letterInput.className = 'letter-input incorrect';
+            playIncorrectSound();
+            
+            streak = 0;
+            document.getElementById('streak').textContent = '0';
+            
+            setTimeout(() => loadNextQuestion(), 1000);
+        }
+
+        async function showResults() {
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('finalCorrect').textContent = correctAnswers;
+            document.getElementById('finalStreak').textContent = bestStreak;
+            document.getElementById('resultsOverlay').classList.add('show');
+            
+            playSuccessSound();
+            
+            // Save score
+            await fetch('/api/save-score', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    mode: 'practice_type', 
+                    score: correctAnswers, 
+                    total: totalQuestions,
+                    extra: { totalScore: score, bestStreak }
+                })
+            });
+        }
+
+        function restartGame() {
+            document.getElementById('resultsOverlay').classList.remove('show');
+            score = 0;
+            streak = 0;
+            bestStreak = 0;
+            correctAnswers = 0;
+            document.getElementById('score').textContent = '0';
+            document.getElementById('streak').textContent = '0';
+            startGame();
+        }
+
+        function goHome() {
+            window.location.href = '/';
+        }
+
+        function vibrateDevice(duration) {
+            if ('vibrate' in navigator) {
+                navigator.vibrate(duration);
+            }
+        }
+
+        function playCorrectSound() {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.frequency.value = 523.25;
+            gain.gain.value = 0.1;
+            osc.start();
+            osc.stop(ctx.currentTime + 0.2);
+        }
+
+        function playIncorrectSound() {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.frequency.value = 200;
+            gain.gain.value = 0.1;
+            osc.start();
+            osc.stop(ctx.currentTime + 0.2);
+        }
+
+        function playSuccessSound() {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+                osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.15);
+            });
+            gain.gain.value = 0.15;
+            osc.start();
+            osc.stop(ctx.currentTime + 0.7);
+        }
+
+        // Start game on load
+        startGame();
+    </script>
+</body>
+</html>
+

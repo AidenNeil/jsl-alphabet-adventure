@@ -1,0 +1,21 @@
+# JSL Alphabet Adventure - Python Dependencies
+
+# Flask web framework for web version
+Flask>=2.3.0
+
+# Audio playback for sound effects (optional for console version)
+# PyAudio is optional - the console app will work without it but without sound
+# On Windows: pip install pyaudio
+# On Linux: sudo apt-get install python3-pyaudio
+# On macOS: pip install pyaudio
+# pyaudio>=0.2.11
+
+# For GUI version (optional - not implemented in base conversion)
+# Uncomment if you want to build a GUI version later
+# tkinter (usually comes with Python)
+# pygame>=2.5.0
+# Pillow>=10.0.0
+
+# For enhanced terminal UI (optional)
+# colorama>=0.4.6
+# rich>=13.0.0

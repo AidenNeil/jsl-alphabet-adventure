@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Challenge - JSL Alphabet Adventure</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .coming-soon-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+        .coming-soon-card {
+            background: white;
+            border-radius: 30px;
+            padding: 60px 40px;
+            max-width: 700px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: fadeInUp 0.6s ease-out;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .coming-soon-icon {
+            font-size: 6rem;
+            margin-bottom: 30px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        .coming-soon-title {
+            font-size: 3.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+        .coming-soon-subtitle {
+            font-size: 1.8rem;
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+        .coming-soon-description {
+            font-size: 1.2rem;
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 40px;
+        }
+        .feature-list {
+            text-align: left;
+            margin: 30px auto;
+            max-width: 500px;
+        }
+        .feature-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: #f8f8f8;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+        .feature-item:hover {
+            background: #f0f0f0;
+            transform: translateX(10px);
+        }
+        .feature-icon {
+            font-size: 2rem;
+            margin-right: 15px;
+            min-width: 50px;
+        }
+        .feature-text {
+            font-size: 1.1rem;
+            color: #333;
+        }
+        .home-button {
+            padding: 18px 50px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+        }
+        .home-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.5);
+        }
+        .construction-badge {
+            display: inline-block;
+            padding: 10px 25px;
+            background: linear-gradient(135deg, #ff6b6b, #feca57);
+            color: white;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="coming-soon-container">
+        <div class="coming-soon-card">
+            <div class="coming-soon-icon">🎯</div>
+            <div class="construction-badge">🚧 IN DEVELOPMENT 🚧</div>
+            <h1 class="coming-soon-title">Word Challenge</h1>
+            <h2 class="coming-soon-subtitle">Coming Soon!</h2>
+            
+            <p class="coming-soon-description">
+                Get ready for the next level! Soon you'll be able to guess complete JSL sign language words,
+                not just letters. This exciting new mode will help you master real-world JSL communication!
+            </p>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-icon">🎥</div>
+                    <div class="feature-text">Watch real JSL word signs</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🌟</div>
+                    <div class="feature-text">Multiple difficulty levels</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">📚</div>
+                    <div class="feature-text">50+ common JSL words</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">💡</div>
+                    <div class="feature-text">Helpful hints available</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🏆</div>
+                    <div class="feature-text">Leaderboard tracking</div>
+                </div>
+            </div>
+
+            <p style="font-size: 1rem; color: #999; margin-top: 30px;">
+                In the meantime, keep mastering the JSL alphabet with our 6 exciting modes!
+            </p>
+
+            <a href="/" class="home-button">Back to Home</a>
+        </div>
+    </div>
+</body>
+</html>

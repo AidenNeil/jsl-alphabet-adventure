@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Survival Mode - JSL Alphabet Adventure</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container quiz-container">
+        <div class="header">
+            <button class="home-button" onclick="exitQuiz()">🚪 Exit</button>
+            <div class="score-display">
+                <span>Lives: <span id="lives" class="lives-display">❤️❤️❤️</span></span>
+                <span>Score: <span id="score" class="score-value">0</span></span>
+                <span id="questionNum">Question 1</span>
+            </div>
+        </div>
+
+        <div id="quizArea" class="quiz-area">
+            <div class="timer-bar">
+                <div class="timer-label">
+                    <span>Survival Mode - Don't make 3 mistakes!</span>
+                    <span id="timeLeft" class="time-display">8s</span>
+                </div>
+                <div class="progress-bar">
+                    <div id="timerFill" class="timer-fill"></div>
+                </div>
+            </div>
+
+            <div class="quiz-card">
+                <div class="image-container">
+                    <img id="questionImage" src="" alt="JSL Sign" class="letter-image">
+                </div>
+
+                <h3 class="quiz-question">What letter is this?</h3>
+
+                <div class="options-grid" id="optionsGrid"></div>
+            </div>
+        </div>
+
+        <div id="resultsArea" class="results-area" style="display: none;">
+            <div class="results-card">
+                <div class="results-emoji" id="resultsEmoji">💀</div>
+                <h2 class="results-title" id="resultsTitle">Game Over!</h2>
+                <div class="results-score" id="resultsScore">Score: 0</div>
+                <p class="results-percentage" id="resultsMessage">You answered X questions!</p>
+                
+                <div class="results-buttons">
+                    <button class="nav-button" onclick="restartQuiz()">🔄 Try Again</button>
+                    <button class="nav-button" onclick="goHome()">🏠 Home</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const timeLimit = 8;
+        let sessionId = null;
+        let currentQuestion = null;
+        let score = 0;
+        let lives = 3;
+        let questionNumber = 0;
+        let showingResult = false;
+        let timerInterval = null;
+        let timeLeft = timeLimit;
+
+        async function startQuiz() {
+            const response = await fetch('/api/quiz/start', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ isFast: false })
+            });
+            const data = await response.json();
+            sessionId = data.sessionId;
+            
+            loadNextQuestion();
+        }
+
+        async function loadNextQuestion() {
+            showingResult = false;
+            const response = await fetch(`/api/quiz/question/${sessionId}`);
+            const data = await response.json();
+            
+            if (data.gameOver) {
+                // Get more questions
+                startQuiz();
+                return;
+            }
+            
+            currentQuestion = data.question;
+            questionNumber++;
+            
+            displayQuestion();
+            startTimer();
+        }
+
+        function displayQuestion() {
+            document.getElementById('questionImage').src = currentQuestion.imageUrl;
+            document.getElementById('score').textContent = score;
+            document.getElementById('questionNum').textContent = `Question ${questionNumber}`;
+            updateLivesDisplay();
+            
+            const optionsGrid = document.getElementById('optionsGrid');
+            optionsGrid.innerHTML = '';
+            
+            currentQuestion.options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'option-button';
+                button.textContent = option;
+                button.onclick = () => submitAnswer(option);
+                optionsGrid.appendChild(button);
+            });
+        }
+
+        function startTimer() {
+            timeLeft = timeLimit;
+            clearInterval(timerInterval);
+            
+            const timerFill = document.getElementById('timerFill');
+            timerFill.style.width = '100%';
+            timerFill.style.transition = `width ${timeLimit}s linear`;
+            
+            setTimeout(() => {
+                timerFill.style.width = '0%';
+            }, 50);
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timeLeft').textContent = `${timeLeft}s`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    handleTimeout();
+                }
+            }, 1000);
+        }
+
+        async function submitAnswer(answer) {
+            if (showingResult) return;
+            showingResult = true;
+            clearInterval(timerInterval);
+            
+            const response = await fetch('/api/quiz/answer', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sessionId, answer })
+            });
+            const data = await response.json();
+            
+            if (data.correct) {
+                score++;
+                playCorrect();
+            } else {
+                lives--;
+                playIncorrect();
+            }
+            
+            highlightAnswer(answer, data.correctAnswer, data.correct);
+            
+            if (lives <= 0) {
+                setTimeout(() => showGameOver(), 1500);
+            } else {
+                setTimeout(() => loadNextQuestion(), 1500);
+            }
+        }
+
+        function handleTimeout() {
+            lives--;
+            playIncorrect();
+            showingResult = true;
+            
+            if (lives <= 0) {
+                setTimeout(() => showGameOver(), 1000);
+            } else {
+                setTimeout(() => loadNextQuestion(), 1000);
+            }
+        }
+
+        function highlightAnswer(selected, correct, isCorrect) {
+            const buttons = document.querySelectorAll('.option-button');
+            buttons.forEach(button => {
+                button.disabled = true;
+                if (button.textContent === correct) {
+                    button.classList.add('correct');
+                } else if (button.textContent === selected && !isCorrect) {
+                    button.classList.add('incorrect');
+                }
+            });
+            updateLivesDisplay();
+        }
+
+        function updateLivesDisplay() {
+            const hearts = '❤️'.repeat(lives) + '🖤'.repeat(3 - lives);
+            document.getElementById('lives').textContent = hearts;
+        }
+
+        async function showGameOver() {
+            // Save score to leaderboard
+            const saveResponse = await fetch('/api/save-score', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    mode: 'survival', 
+                    score: score, 
+                    total: score  // In survival, total equals score
+                })
+            });
+            const saveData = await saveResponse.json();
+            
+            document.getElementById('quizArea').style.display = 'none';
+            document.getElementById('resultsArea').style.display = 'flex';
+            
+            const emoji = score >= 20 ? '🏆' : score >= 10 ? '🎉' : '💀';
+            let title = score >= 20 ? 'Amazing!' : score >= 10 ? 'Great Job!' : 'Game Over!';
+            if (saveData.isNewHighScore) {
+                title = '🏆 NEW HIGH SCORE! 🏆';
+            }
+            
+            document.getElementById('resultsEmoji').textContent = emoji;
+            document.getElementById('resultsTitle').textContent = title;
+            document.getElementById('resultsScore').textContent = `Score: ${score}`;
+            document.getElementById('resultsMessage').textContent = `You answered ${score} questions correctly!${saveData.isNewHighScore ? ' 🏆' : ''}`;
+        }
+
+        function restartQuiz() {
+            document.getElementById('resultsArea').style.display = 'none';
+            document.getElementById('quizArea').style.display = 'block';
+            score = 0;
+            lives = 3;
+            questionNumber = 0;
+            startQuiz();
+        }
+
+        function exitQuiz() {
+            clearInterval(timerInterval);
+            window.location.href = '/';
+        }
+
+        function goHome() {
+            window.location.href = '/';
+        }
+
+        function goToWords() {
+            window.location.href = '/words';
+        }
+
+        function playCorrect() {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.frequency.value = 523.25;
+            gain.gain.value = 0.1;
+            osc.start();
+            osc.stop(ctx.currentTime + 0.2);
+        }
+
+        function playIncorrect() {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.frequency.value = 200;
+            gain.gain.value = 0.1;
+            osc.start();
+            osc.stop(ctx.currentTime + 0.2);
+        }
+
+        startQuiz();
+    </script>
+</body>
+</html>
+

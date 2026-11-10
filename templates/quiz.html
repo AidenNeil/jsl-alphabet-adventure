@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ mode.capitalize() }} Mode - JSL Alphabet Adventure</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container quiz-container">
+        <div class="header">
+            <button class="home-button" onclick="exitQuiz()">🚪 Exit</button>
+            <div class="score-display">
+                <span>Score: <span id="score" class="score-value">0</span></span>
+                <span id="progress">1 / 10</span>
+            </div>
+        </div>
+
+        <div id="quizArea" class="quiz-area">
+            <div class="timer-bar">
+                <div class="timer-label">
+                    <span>Progress</span>
+                    <span id="timeLeft" class="time-display">{{ time_limit }}s</span>
+                </div>
+                <div class="progress-bar">
+                    <div id="progressFill" class="progress-fill"></div>
+                </div>
+            </div>
+
+            <div class="quiz-card">
+                <div class="image-container">
+                    <img id="questionImage" src="" alt="JSL Sign" class="letter-image">
+                </div>
+
+                <h3 class="quiz-question">What letter is this?</h3>
+
+                <div class="options-grid" id="optionsGrid"></div>
+            </div>
+        </div>
+
+        <div id="resultsArea" class="results-area" style="display: none;">
+            <div class="results-card">
+                <div class="results-emoji" id="resultsEmoji">🎉</div>
+                <h2 class="results-title" id="resultsTitle">Great Job!</h2>
+                <div class="results-score" id="resultsScore">0 / 10</div>
+                <p class="results-percentage" id="resultsPercentage">You got 0% correct!</p>
+                
+                <div class="results-buttons">
+                    <button class="nav-button" onclick="restartQuiz()">🔄 Try Again</button>
+                    <button class="nav-button" onclick="goHome()">🏠 Home</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const isFast = {{ 'true' if mode == 'challenge' else 'false' }};
+        const timeLimit = {{ time_limit }};
+        const mode = '{{ mode }}';
+        let sessionId = null;
+        let currentQuestion = null;
+        let totalQuestions = 10;
+        let score = 0;
+        let currentQuestionNumber = 0;
+        let timerInterval = null;
+        let timeLeft = timeLimit;
+        let showingResult = false;
+
+        async function startQuiz() {
+            const response = await fetch('/api/quiz/start', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ isFast })
+            });
+            const data = await response.json();
+            sessionId = data.sessionId;
+            totalQuestions = data.totalQuestions;
+            
+            loadNextQuestion();
+        }
+
+        async function loadNextQuestion() {
+            showingResult = false;
+            const response = await fetch(`/api/quiz/question/${sessionId}`);
+            const data = await response.json();
+            
+            if (data.gameOver) {
+                showResults();
+                return;
+            }
+            
+            currentQuestion = data.question;
+            currentQuestionNumber = data.currentIndex + 1;
+            score = data.score;
+            
+            displayQuestion();
+            startTimer();
+        }
+
+        function displayQuestion() {
+            document.getElementById('questionImage').src = currentQuestion.imageUrl;
+            document.getElementById('score').textContent = score;
+            document.getElementById('progress').textContent = `${currentQuestionNumber} / ${totalQuestions}`;
+            
+            const optionsGrid = document.getElementById('optionsGrid');
+            optionsGrid.innerHTML = '';
+            
+            currentQuestion.options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'option-button';
+                button.textContent = option;
+                button.onclick = () => submitAnswer(option);
+                optionsGrid.appendChild(button);
+            });
+            
+            updateProgressBar();
+        }
+
+        function startTimer() {
+            timeLeft = timeLimit;
+            clearInterval(timerInterval);
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timeLeft').textContent = `${timeLeft}s`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    handleTimeout();
+                }
+            }, 1000);
+        }
+
+        async function submitAnswer(answer) {
+            if (showingResult) return;
+            showingResult = true;
+            clearInterval(timerInterval);
+            
+            const response = await fetch('/api/quiz/answer', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sessionId, answer, mode })
+            });
+            const data = await response.json();
+            
+            highlightAnswer(answer, data.correctAnswer, data.correct);
+            
+            setTimeout(() => {
+                if (data.gameOver) {
+                    showResults();
+                } else {
+                    loadNextQuestion();
+                }
+            }, 1500);
+        }
+
+        function highlightAnswer(selected, correct, isCorrect) {
+            const buttons = document.querySelectorAll('.option-button');
+            buttons.forEach(button => {
+                button.disabled = true;
+                if (button.textContent === correct) {
+                    button.classList.add('correct');
+                    playCorrect();
+                } else if (button.textContent === selected && !isCorrect) {
+                    button.classList.add('incorrect');
+                    playIncorrect();
+                }
+            });
+        }
+
+        function handleTimeout() {
+            showingResult = true;
+            playIncorrect();
+            setTimeout(() => loadNextQuestion(), 1500);
+        }
+
+        function updateProgressBar() {
+            const progress = (currentQuestionNumber / totalQuestions) * 100;
+            document.getElementById('progressFill').style.width = `${progress}%`;
+        }
+
+        async function showResults() {
+            const percentage = (score / totalQuestions) * 100;
+            const passed = percentage >= 70;
+            
+            // Save score to leaderboard
+            const saveResponse = await fetch('/api/save-score', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    mode: mode, 
+                    score: score, 
+                    total: totalQuestions 
+                })
+            });
+            const saveData = await saveResponse.json();
+            
+            document.getElementById('quizArea').style.display = 'none';
+            document.getElementById('resultsArea').style.display = 'flex';
+            
+            let title = passed ? 'Great Job!' : 'Keep Practicing!';
+            if (saveData.isNewHighScore) {
+                title = '🏆 NEW HIGH SCORE! 🏆';
+            }
+            
+            document.getElementById('resultsEmoji').textContent = passed ? '🎉' : '💪';
+            document.getElementById('resultsTitle').textContent = title;
+            document.getElementById('resultsScore').textContent = `${score} / ${totalQuestions}`;
+            document.getElementById('resultsPercentage').textContent = `You got ${percentage.toFixed(0)}% correct!${saveData.isNewHighScore ? ' 🏆' : ''}`;
+            
+            if (passed) playSuccess();
+        }
+
+        function restartQuiz() {
+            document.getElementById('resultsArea').style.display = 'none';
+            document.getElementById('quizArea').style.display = 'block';
+            score = 0;
+            startQuiz();
+        }
+
+        function exitQuiz() {
+            clearInterval(timerInterval);
+            window.location.href = '/';
+        }
+
+        function goHome() {
+            window.location.href = '/';
+        }
+
+        function goToWords() {
+            window.location.href = '/words';
+        }
+
+        // Sound effects
+        function playCorrect() {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.frequency.value = 523.25;
+            gain.gain.value = 0.1;
+            osc.start();
+            osc.stop(ctx.currentTime + 0.2);
+        }
+
+        function playIncorrect() {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.frequency.value = 200;
+            gain.gain.value = 0.1;
+            osc.start();
+            osc.stop(ctx.currentTime + 0.2);
+        }
+
+        function playSuccess() {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            [523.25, 659.25, 783.99].forEach((freq, i) => {
+                osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.1);
+            });
+            gain.gain.value = 0.1;
+            osc.start();
+            osc.stop(ctx.currentTime + 0.4);
+        }
+
+        startQuiz();
+    </script>
+</body>
+</html>
+
